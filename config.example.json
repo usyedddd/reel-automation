@@ -1,0 +1,42 @@
+{
+  "_comment": "Onboarding copies this to config.json (git-ignored) and fills it in with you. Never put API keys here: ElevenLabs runs through its MCP connector.",
+
+  "channel": {
+    "name": "<Your channel name>",
+    "handle": "@yourhandle",
+    "niche": "<what your reels are about>",
+    "bio": "<one short line for the follow card>"
+  },
+
+  "voice": {
+    "provider": "elevenlabs",
+    "voiceId": "<YOUR_ELEVENLABS_VOICE_ID>",
+    "voiceName": "<voice name>",
+    "model": "<model id, e.g. the newest ElevenLabs model>",
+    "targetWpm": [160, 175]
+  },
+
+  "defaults": {
+    "styleName": "<your style pack: styles/<name>.md>",
+    "targetSeconds": 40,
+    "captionStyle": "dynamic",
+    "accent": "blue",
+    "musicBed": "",
+    "cta": "follow"
+  },
+
+  "rules": {
+    "_comment": "Optional checks the validator runs. Onboarding sets them from your style pack; delete any you don't want.",
+    "max_scene_seconds": 5.0,
+    "min_light_share": 0.5,
+    "min_screenshots": 2,
+    "avoid_hues": []
+  },
+
+  "render": {
+    "width": 1080,
+    "height": 1920,
+    "fps": 30,
+    "loudnessTarget": "I=-14:TP=-1.2:LRA=7"
+  }
+}

@@ -1,0 +1,39 @@
+# dependencies + build output
+node_modules/
+out/
+__pycache__/
+*.pyc
+*.log
+.DS_Store
+
+# your settings (voice id, channel, rules)
+config.json
+.env
+.env.*
+
+# your style pack (keep the template)
+styles/*
+!styles/README.md
+!styles/_template.md
+
+# reference reels you study (never commit other people's videos)
+reference/*
+!reference/README.md
+
+# your reels: jobs, assets, compiled beat sheets, finished videos
+jobs/*
+!jobs/.gitkeep
+public/assets/*
+!public/assets/.gitkeep
+src/beats/*.json
+reels/
+
+# audio library (licences don't allow redistributing the files)
+public/music/*
+!public/music/README.md
+public/sfx/*
+!public/sfx/README.md
+public/CREDITS.txt
+
+# local agent settings
+.claude/settings.local.json

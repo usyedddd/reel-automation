@@ -1,0 +1,36 @@
+{
+  "name": "reel-automation",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Agent-driven faceless short-form reels: voiceover, real receipts, motion scenes, captions and a mastered render, as code.",
+  "license": "MIT",
+  "scripts": {
+    "doctor": "python scripts/doctor.py",
+    "studio": "remotion studio",
+    "smoke": "python scripts/smoke_test.py",
+    "new:job": "python scripts/new_job.py",
+    "compile:job": "python scripts/compile_shot_plan.py",
+    "validate:job": "python scripts/validate_job.py",
+    "register": "python scripts/register_beats.py",
+    "render:job": "python scripts/render_job.py",
+    "publish:reel": "python scripts/publish_reel.py",
+    "analyze:reference": "python tools/analyze_reference.py",
+    "setup:browser": "playwright install chromium"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.501",
+    "@remotion/fonts": "4.0.501",
+    "@remotion/google-fonts": "4.0.501",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "remotion": "4.0.501"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.12",
+    "playwright": "^1.62.0",
+    "typescript": "5.6.3"
+  },
+  "allowScripts": {
+    "esbuild@0.28.1": true
+  }
+}

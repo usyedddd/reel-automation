@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reel Automation Diagram</title>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Poster diagram (export with capture.mjs --selector svg --scale 2 → 4800 px wide PNG).
+   Light and simple: thin grey lines, white nodes, one soft green accent. */
+html,body{margin:0;background:#F6F6F7}
+svg{display:block;font-family:Montserrat,"Segoe UI",sans-serif}
+</style>
+</head>
+<body>
+<svg id="d" xmlns="http://www.w3.org/2000/svg" width="2400" height="1200" viewBox="0 0 2400 1200"></svg>
+<script>
+{
+const BG = "#F6F6F7", TITLE = "#23252A", TEXT = "#3C3F45", MUTED = "#7A7D84", LINE = "#C4C6CB",
+      NODE = "#D3D5DA", ICON = "#4A4D54", ZONE = "#EDEDF0", TAG = "#DDF7EC", TAGT = "#1C6E4C", ACC = "#2FA97A";
+const steps = [
+  {name: "Find the story", d: ["Fresh, sourced", "stories in your niche"], icon: "find", z: 0},
+  {name: "Script + facts", d: ["Script + beat map,", "every fact sourced"], icon: "script", z: 0},
+  {name: "Voiceover", d: ["ElevenLabs voice,", "timed word by word"], icon: "voice", z: 1},
+  {name: "Real media", d: ["Real faces, news,", "Google, site videos"], icon: "media", z: 1},
+  {name: "Shot plan", d: ["Scenes cut on", "the voice"], icon: "film", z: 1},
+  {name: "Preview", d: ["Stills to catch", "mistakes early"], icon: "eye", z: 1},
+  {name: "Render", d: ["Upload quality,", "mastered sound"], icon: "play", z: 1},
+  {name: "Ship", d: ["Captions, cover,", "ready to post"], icon: "ship", z: 2}
+];
+const zones = ["Plan", "Make", "Ship"];
+const gates = [{after: 0, label: "You pick"}, {after: 1, label: "You approve"}, {after: 6, label: "You review"}];
+
+const x0 = 230, x1 = 2170, step = (x1 - x0) / (steps.length - 1), ty = 600, R = 58;
+const X = i => x0 + i * step;
+const t = (x, y, s, o = {}) => `<text x="${x}" y="${y}" font-size="${o.size || 24}" font-weight="${o.w || 500}" fill="${o.fill || TEXT}" text-anchor="${o.anchor || "middle"}">${s}</text>`;
+
+// simple line icons in a 64-unit box centred on the node
+const icon = (k, cx, cy, c) => {
+  const g = (inner) => `<g transform="translate(${cx} ${cy})" fill="none" stroke="${c}" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round">${inner}</g>`;
+  switch (k) {
+    case "find": return g(`<circle cx="-5" cy="-5" r="15"/><line x1="6" y1="6" x2="19" y2="19"/>`);
+    case "script": return g(`<path d="M-15 -21 H7 L16 -12 V21 H-15 Z"/><path d="M7 -21 V-12 H16"/><line x1="-8" y1="-2" x2="9" y2="-2"/><line x1="-8" y1="7" x2="9" y2="7"/><line x1="-8" y1="15" x2="3" y2="15"/>`);
+    case "voice": return g([[-21, 8], [-14, 20], [-7, 32], [0, 18], [7, 27], [14, 14], [21, 7]].map(([x, h]) => `<line x1="${x}" y1="${-h / 2}" x2="${x}" y2="${h / 2}"/>`).join(""));
+    case "media": return g(`<rect x="-23" y="-18" width="46" height="36" rx="5"/><circle cx="0" cy="-4" r="7"/><path d="M-13 18 C -11 5, 11 5, 13 18"/>`);
+    case "film": return g(`<rect x="-23" y="-16" width="46" height="32" rx="4"/><line x1="-8" y1="-16" x2="-8" y2="16"/><line x1="8" y1="-16" x2="8" y2="16"/>`);
+    case "eye": return g(`<path d="M-24 0 C -13 -15, 13 -15, 24 0 C 13 15, -13 15, -24 0 Z"/><circle cx="0" cy="0" r="6"/>`);
+    case "play": return g(`<path d="M-10 -15 L14 -1 L-10 13 Z"/><line x1="-19" y1="22" x2="19" y2="22"/>`);
+    case "ship": return g(`<path d="M0 10 V-17"/><path d="M-10 -7 L0 -17 L10 -7"/><path d="M-20 5 V19 H20 V5"/>`);
+  }
+};
+
+let s = `<rect width="2400" height="1200" fill="${BG}"/>`;
+s += t(110, 140, "Reel automation", {size: 72, w: 700, fill: TITLE, anchor: "start"});
+s += t(112, 196, "From a story idea to a posted reel, in 8 steps and 3 calls you make.", {size: 28, w: 500, fill: MUTED, anchor: "start"});
+
+// stage areas
+zones.forEach((z, k) => {
+  const idx = steps.map((st, i) => st.z === k ? i : -1).filter(i => i >= 0);
+  const a = X(idx[0]) - step / 2 + 10, b = X(idx[idx.length - 1]) + step / 2 - 10;
+  s += `<rect x="${a}" y="${ty - 150}" width="${b - a}" height="460" rx="30" fill="${ZONE}"/>`;
+  s += t(a + 28, ty + 280, z, {size: 26, w: 600, fill: MUTED, anchor: "start"});
+});
+
+// track
+s += `<line x1="${X(0)}" y1="${ty}" x2="${X(steps.length - 1)}" y2="${ty}" stroke="${LINE}" stroke-width="3" stroke-linecap="round"/>`;
+
+// feedback loop: review → back to real media
+const gx = X(6) + step / 2, mx = X(3), top = 310;
+s += `<defs><marker id="ar" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="${ACC}"/></marker></defs>`;
+s += `<path d="M${gx} ${ty - 132} V ${top + 36} Q ${gx} ${top}, ${gx - 36} ${top} H ${mx + 36} Q ${mx} ${top}, ${mx} ${top + 36} V ${ty - R - 14}" fill="none" stroke="${ACC}" stroke-width="2.5" stroke-dasharray="10 9" stroke-linecap="round" marker-end="url(#ar)"/>`;
+const labelX = (gx + mx) / 2;
+s += `<rect x="${labelX - 300}" y="${top - 26}" width="600" height="52" fill="${BG}"/>`;
+s += t(labelX, top + 9, "Your notes become rules, then rework", {size: 26, w: 600, fill: TAGT});
+
+// your decisions
+gates.forEach((g, k) => {
+  const x = X(g.after) + step / 2, ly = ty - 88 - (k === 1 ? 58 : 0), w = g.label.length * 14 + 34;
+  s += `<line x1="${x}" y1="${ly + 12}" x2="${x}" y2="${ty - 13}" stroke="${LINE}" stroke-width="2"/>`;
+  s += `<rect x="${x - 11}" y="${ty - 11}" width="22" height="22" transform="rotate(45 ${x} ${ty})" fill="#FFFFFF" stroke="${ACC}" stroke-width="3"/>`;
+  s += `<rect x="${x - w / 2}" y="${ly - 30}" width="${w}" height="42" rx="21" fill="${TAG}"/>`;
+  s += t(x, ly - 1, g.label, {size: 24, w: 600, fill: TAGT});
+});
+
+// steps
+steps.forEach((st, i) => {
+  const x = X(i), last = i === steps.length - 1;
+  s += `<circle cx="${x}" cy="${ty}" r="${R}" fill="#FFFFFF" stroke="${last ? ACC : NODE}" stroke-width="${last ? 3.5 : 2.5}"/>`;
+  s += icon(st.icon, x, ty, last ? ACC : ICON);
+  s += t(x, ty + R + 54, st.name, {size: 30, w: 700, fill: TITLE});
+  st.d.forEach((line, j) => { s += t(x, ty + R + 94 + j * 31, line, {size: 22, w: 500, fill: MUTED}); });
+});
+
+// key figures
+const figs = [["1080×1920", "30 fps vertical"], ["−14 LUFS", "mastered sound"], ["3", "calls you make"], ["Every", "number sourced"], ["Your style", "learned from references"]];
+const fw = 340, gap = 30, fx0 = (2400 - (figs.length * fw + (figs.length - 1) * gap)) / 2;
+figs.forEach(([big, small], k) => {
+  const x = fx0 + k * (fw + gap);
+  s += `<rect x="${x}" y="1020" width="${fw}" height="122" rx="22" fill="#FFFFFF" stroke="#E2E3E6" stroke-width="2"/>`;
+  s += t(x + fw / 2, 1076, big, {size: 40, w: 700, fill: TITLE});
+  s += t(x + fw / 2, 1114, small, {size: 22, w: 500, fill: MUTED});
+});
+
+document.getElementById("d").innerHTML = s;
+}
+</script>
+</body>
+</html>
